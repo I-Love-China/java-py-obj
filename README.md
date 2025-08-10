@@ -1,14 +1,15 @@
-# Python Object Parser (Java 实现)
+# Python Object Parser (Java 实现) - v1.1
 
 [![Java Version](https://img.shields.io/badge/Java-8%2B-blue.svg)](https://www.oracle.com/java/)
 [![Maven](https://img.shields.io/badge/Maven-3.x-red.svg)](https://maven.apache.org/)
+[![Version](https://img.shields.io/badge/Version-v1.1-orange.svg)](https://github.com/typist/java-py-obj)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > 一个高性能的 Python 对象字面量解析器，使用 Java 实现，基于编译原理构建完整的词法分析、语法分析和语义转换流水线。
 
 ## 🌟 项目概述
 
-本项目实现了一个完整的编译器前端，能够将 Python 对象字面量语法转换为 JSON 格式或 Java 原生对象。项目采用经典的编译器设计模式，包含词法分析器、语法分析器和代码生成器，是学习编译原理的优秀实践项目。
+本项目实现了一个完整的编译器前端，能够将 Python 对象字面量语法转换为 JSON 格式或 Java 原生对象。项目采用现代编译器设计模式，包含词法分析器、语法分析器和代码生成器，是学习编译原理的优秀实践项目。
 
 ### 核心特性
 
@@ -19,6 +20,7 @@
 - ⚡ **高性能设计**：O(n) 时间复杂度，内存优化
 - 🛡️ **完善错误处理**：详细的错误定位和恢复机制
 - 📋 **全面测试覆盖**：包含单元测试和集成测试
+- 🏗️ **现代设计模式**：状态模式 + 解释器模式 + 访问者模式
 
 ### 支持的数据类型
 
@@ -95,32 +97,39 @@ mvn compile exec:java -Dexec.mainClass="com.github.typist.PythonObjectParser"
 ```
 src/main/java/com/github/typist/
 ├── PythonObjectParser.java     # 主入口类（门面模式）
-├── lexer/                      # 词法分析器模块
-│   ├── Lexer.java             # 词法分析器（状态机）
-│   ├── LexerState.java        # 词法分析状态基类
+├── lexer/                      # 词法分析器模块（状态模式）
+│   ├── Lexer.java             # 词法分析器主类
+│   ├── LexerState.java        # 状态基类
 │   ├── LexerContext.java      # 词法分析上下文
 │   ├── Token.java             # 记号类
 │   ├── TokenType.java         # 记号类型枚举
-│   └── states/                # 具体状态实现
-│       ├── DispatchState.java
-│       ├── NumberState.java
-│       ├── StringState.java
-│       ├── IdentifierState.java
-│       └── ...
-├── parser/                     # 语法分析器模块
-│   ├── Parser.java            # 语法分析器（递归下降）
+│   ├── DispatchState.java     # 分发状态
+│   ├── NumberState.java       # 数字识别状态
+│   ├── StringState.java       # 字符串识别状态
+│   ├── IdentifierState.java   # 标识符识别状态
+│   ├── DelimiterState.java    # 分隔符识别状态
+│   └── ErrorState.java        # 错误处理状态
+├── parser/                     # 语法分析器模块（解释器模式）
+│   ├── Parser.java            # 语法分析器门面
+│   ├── ParseContext.java      # 解析上下文
+│   ├── GrammarRule.java       # 解释器接口
+│   ├── ValueRule.java         # 值规则解释器（根解释器）
+│   ├── PrimitiveRule.java     # 基本类型解释器
+│   ├── ListRule.java          # 列表解释器
+│   ├── TupleRule.java         # 元组解释器
+│   ├── DictOrSetRule.java     # 字典/集合解释器
 │   ├── PythonValue.java       # AST 节点基类
 │   └── Visitable.java         # 访问者接口
 └── visitor/                    # 访问者模式实现
-    ├── PythonValueVisitor.java
-    ├── JavaObjectVisitor.java
-    ├── JsonNodeVisitor.java
-    └── ValidationVisitor.java
+    ├── PythonValueVisitor.java # 访问者接口
+    ├── JavaObjectVisitor.java # Java对象转换访问者
+    ├── JsonNodeVisitor.java   # JSON节点转换访问者
+    └── ValidationVisitor.java # 验证访问者
 ```
 
 ### 核心组件说明
 
-#### 1. 词法分析器 (Lexer)
+#### 1. 词法分析器 (Lexer) - 状态模式实现
 - **作用**：将字符流转换为记号流
 - **实现**：基于状态模式的有限状态自动机
 - **特性**：支持字符串转义、数字识别、关键字分派
@@ -132,9 +141,9 @@ List<Token> tokens = lexer.tokenize();
 // 输出: [LBRACE, STRING("key"), COLON, STRING("value"), RBRACE, EOF]
 ```
 
-#### 2. 语法分析器 (Parser)
+#### 2. 语法分析器 (Parser) - 解释器模式实现
 - **作用**：将记号流转换为抽象语法树 (AST)
-- **实现**：递归下降分析法 (LL1)
+- **实现**：基于解释器模式的递归下降分析法 (LL1)
 - **特性**：支持嵌套结构、歧义消解（字典vs集合）
 
 ```java
@@ -242,13 +251,14 @@ mvn jacoco:report
 
 ### 测试覆盖范围
 
-- ✅ **基础类型测试**: 数字、字符串、布尔值、空值
-- ✅ **容器类型测试**: 列表、字典、元组、集合
-- ✅ **嵌套结构测试**: 多层嵌套、混合类型
-- ✅ **边界条件测试**: 空容器、极值、特殊字符
-- ✅ **错误处理测试**: 语法错误、类型错误、格式错误
-- ✅ **Unicode 支持**: 中文字符、特殊符号
-- ✅ **转义字符测试**: 换行符、制表符、引号转义
+- ✅ **基础类型测试**: 数字、字符串、布尔值、空值（包含边界值测试）
+- ✅ **容器类型测试**: 列表、字典、元组、集合（包含空容器）
+- ✅ **嵌套结构测试**: 多层嵌套、混合类型（最深5层嵌套）
+- ✅ **字符串转义测试**: 换行符、制表符、引号转义、反斜杠处理
+- ✅ **Unicode支持测试**: 中文字符、特殊符号、混合字符集
+- ✅ **关键字处理测试**: 字符串中的关键字 vs 实际关键字
+- ✅ **错误处理测试**: 语法错误、类型错误、格式错误、边界条件
+- ✅ **复杂场景测试**: 深层嵌套、混合数据类型、尾随逗号处理
 
 ### 性能基准测试
 
@@ -324,11 +334,12 @@ public class XmlVisitor implements PythonValueVisitor<String> {
 
 ### 设计模式应用
 
-- **门面模式**: `PythonObjectParser` 提供简化的接口
-- **状态模式**: 词法分析器的状态管理
-- **访问者模式**: AST 遍历和转换
-- **组合模式**: AST 节点的树形结构
-- **策略模式**: 多种输出格式支持
+- **门面模式 (Facade Pattern)**: `PythonObjectParser` 提供简化的接口
+- **状态模式 (State Pattern)**: 词法分析器的状态管理 (`LexerState` 及其子类)
+- **解释器模式 (Interpreter Pattern)**: 语法分析器的规则实现 (`GrammarRule` 及其子类)
+- **访问者模式 (Visitor Pattern)**: AST 遍历和转换 (`PythonValueVisitor` 及其实现)
+- **组合模式 (Composite Pattern)**: AST 节点的树形结构
+- **策略模式 (Strategy Pattern)**: 多种输出格式支持
 
 ### 算法复杂度
 
@@ -374,5 +385,5 @@ public class XmlVisitor implements PythonValueVisitor<String> {
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/typist">typist</a>
+  Made with ❤️ by <a href="https://github.com/I-Love-China">typist</a>
 </p>
