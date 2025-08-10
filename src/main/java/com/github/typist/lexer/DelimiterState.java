@@ -13,7 +13,7 @@ import com.github.typist.lexer.TokenType;
  * @author Generated with Claude Code
  * @version 1.0
  */
-public class DelimiterState implements LexerState {
+class DelimiterState implements LexerState {
 
     @Override
     public boolean process(LexerContext context) {

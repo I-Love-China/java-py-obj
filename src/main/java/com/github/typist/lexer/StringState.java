@@ -12,7 +12,7 @@ package com.github.typist.lexer;
  * @author Generated with Claude Code
  * @version 1.0
  */
-public class StringState implements LexerState {
+ class StringState implements LexerState {
 
     @Override
     public boolean process(LexerContext context) {
