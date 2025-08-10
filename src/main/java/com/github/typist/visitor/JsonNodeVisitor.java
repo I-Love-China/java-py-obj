@@ -58,8 +58,8 @@ import java.util.Map;
  * - 访问者本身是无状态的，可以被多个线程共享
  * - 创建的JsonNode对象是不可变的
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  * @see PythonValueVisitor
  * @see PythonValue
  */

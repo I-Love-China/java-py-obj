@@ -36,8 +36,8 @@ import java.util.Map;
  * - **策略模式**：不同的验证策略可以替换
  * - **收集器模式**：收集验证统计信息
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  * @see PythonValueVisitor
  * @see PythonValue
  */

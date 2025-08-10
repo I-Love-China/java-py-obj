@@ -78,8 +78,8 @@ import java.util.List;
  * - 每次解析都创建新的词法和语法分析器
  * - 可以安全地在多线程环境中使用同一个实例
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 public class PythonObjectParser {
     
@@ -217,7 +217,7 @@ public class PythonObjectParser {
      * 
      * 转换流程：
      * 1-2. 词法和语法分析（与parseToJson相同）
-     * 3. 直接调用PythonValue.toJavaObject()进行转换
+     * 3. 使用访问者模式直接转换为Java对象
      * 
      * 输出类型映射：
      * - Python int/float → Java Integer/Long/Double

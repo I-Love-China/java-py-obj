@@ -11,8 +11,8 @@ import java.util.List;
  * 
  * 包内类，不直接对外暴露，通过Lexer类提供服务。
  * 
- * @author Generated with Claude Code
- * @version 2.0
+ * @author typist
+ * @version 1.1
  */
 class LexerContext {
     

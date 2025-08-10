@@ -11,7 +11,7 @@ import java.util.List;
  * 
  * 解析流程与列表类似，但使用圆括号。
  * 
- * @author Generated with Claude Code
+ * @author typist
  */
 class TupleRule implements GrammarRule {
     

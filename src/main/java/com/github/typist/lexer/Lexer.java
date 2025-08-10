@@ -26,8 +26,8 @@ import java.util.List;
  * - 空值：None
  * - 容器分隔符：[], {}, (), 逗号, 冒号
  * 
- * @author Generated with Claude Code
- * @version 2.0 (State Pattern with Package Encapsulation)
+ * @author typist
+ * @version 1.1
  */
 public class Lexer {
     

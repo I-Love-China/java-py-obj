@@ -10,8 +10,8 @@ import com.github.typist.lexer.TokenType;
  * <p>
  * 包内类，实现细节不对外暴露。
  *
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 class DelimiterState implements LexerState {
 

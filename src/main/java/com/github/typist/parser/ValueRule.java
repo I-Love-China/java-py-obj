@@ -12,7 +12,7 @@ import java.util.Map;
  * 这是解释器层次结构的根节点，负责根据当前 token 类型
  * 分发给对应的具体解释器。这体现了解释器模式的组合特性。
  * 
- * @author Generated with Claude Code
+ * @author typist
  */
 class ValueRule implements GrammarRule {
     

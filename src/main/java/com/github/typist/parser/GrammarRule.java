@@ -16,7 +16,7 @@ package com.github.typist.parser;
  * - 职责清晰：每个解释器只处理一种语法结构
  * - 符合开闭原则：扩展时无需修改现有代码
  * 
- * @author Generated with Claude Code
+ * @author typist
  */
 interface GrammarRule {
     

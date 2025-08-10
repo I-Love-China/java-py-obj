@@ -35,8 +35,8 @@ import java.util.List;
  * PythonValue result = parser.parse();
  * ```
  *
- * @author Generated with Claude Code
- * @version 3.0
+ * @author typist
+ * @version 1.1
  */
 public class Parser {
     private final List<Token> tokens;

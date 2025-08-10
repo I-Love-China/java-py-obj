@@ -17,8 +17,8 @@ package com.github.typist.lexer;
  * - 布尔 "True" → Token(BOOLEAN, true, position)
  * - 分隔符 "[" → Token(LEFT_BRACKET, '[', position)
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 public class Token {
     

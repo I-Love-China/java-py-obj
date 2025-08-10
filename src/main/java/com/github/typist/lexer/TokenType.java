@@ -14,8 +14,8 @@ package com.github.typist.lexer;
  * 词法分析流程：
  * 输入字符串 → 词法分析器 → 记号序列 → 语法分析器
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 public enum TokenType {
     

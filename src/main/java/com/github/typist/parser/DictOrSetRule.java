@@ -13,7 +13,7 @@ import java.util.*;
  * <p>
  * 通过向前看技术区分字典和集合。
  *
- * @author Generated with Claude Code
+ * @author typist
  */
 class DictOrSetRule implements GrammarRule {
 

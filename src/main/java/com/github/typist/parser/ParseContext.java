@@ -16,7 +16,7 @@ import java.util.List;
  * - 解析状态的共享
  * - 错误信息的统一格式化
  * 
- * @author Generated with Claude Code
+ * @author typist
  */
 class ParseContext {
     

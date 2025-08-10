@@ -47,8 +47,8 @@ import com.github.typist.visitor.PythonValueVisitor;
  * - 添加新类型：实现Visitable接口，添加对应的visit方法
  * - 组合访问者：可以创建复合访问者处理复杂场景
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 public interface Visitable {
     

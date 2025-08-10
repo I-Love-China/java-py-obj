@@ -37,8 +37,8 @@ import java.util.Map;
  * - list/tuple/set → Object[]
  * - dict → Map<String, Object>
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 public abstract class PythonValue implements Visitable {
     

@@ -8,8 +8,8 @@ package com.github.typist.lexer;
  * 
  * 包内接口，不对外暴露具体的状态实现细节。
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 interface LexerState {
     

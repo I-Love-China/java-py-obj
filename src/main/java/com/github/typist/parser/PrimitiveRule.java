@@ -9,7 +9,7 @@ import com.github.typist.lexer.TokenType;
  * 
  * 这是最简单的解释器，直接将 token 的值包装为 PrimitiveValue。
  * 
- * @author Generated with Claude Code
+ * @author typist
  */
 class PrimitiveRule implements GrammarRule {
     

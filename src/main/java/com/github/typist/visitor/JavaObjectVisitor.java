@@ -16,7 +16,7 @@ import java.util.Map;
  * - 直接转换：避免JSON序列化/反序列化的开销
  * - 类型保持：尽可能保持原始的Java类型信息
  * - 性能优化：使用最适合的Java数据结构
- * - 兼容性：与原有toJavaObject()方法保持兼容
+ * - 易于扩展：支持多种输出格式的统一处理
  * 
  * 转换映射规则：
  * ┌─────────────────┬──────────────────┬──────────────────────────────┐
@@ -55,8 +55,8 @@ import java.util.Map;
  * - 返回的对象可能是可变的，需要调用者处理并发
  * - 基本类型包装对象是不可变的，线程安全
  * 
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  * @see PythonValueVisitor
  * @see PythonValue
  */

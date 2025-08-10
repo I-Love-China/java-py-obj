@@ -14,7 +14,7 @@ import java.util.List;
  * 2. 如果不是 ']'，则解析元素列表
  * 3. 消费 ']'
  * 
- * @author Generated with Claude Code
+ * @author typist
  */
 class ListRule implements GrammarRule {
     

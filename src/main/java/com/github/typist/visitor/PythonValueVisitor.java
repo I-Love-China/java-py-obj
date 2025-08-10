@@ -40,8 +40,8 @@ import com.github.typist.parser.PythonValue;
  * ```
  * 
  * @param <T> 访问操作的返回值类型
- * @author Generated with Claude Code
- * @version 1.0
+ * @author typist
+ * @version 1.1
  */
 public interface PythonValueVisitor<T> {
     
