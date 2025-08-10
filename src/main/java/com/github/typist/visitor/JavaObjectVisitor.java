@@ -114,8 +114,10 @@ public class JavaObjectVisitor implements PythonValueVisitor<Object> {
     @Override
     public Object visitList(PythonValue.ListValue list) {
         return list.getElements().stream()
-                .map(element -> element.accept(this))  // 递归转换每个元素
-                .toArray();  // 转换为Object[]
+                // 递归转换每个元素
+                .map(element -> element.accept(this))
+                // 转换为Object[]
+                .toArray();
     }
     
     /**
@@ -153,7 +155,8 @@ public class JavaObjectVisitor implements PythonValueVisitor<Object> {
         for (Map.Entry<PythonValue, PythonValue> entry : dict.getEntries().entrySet()) {
             // 将键转换为字符串，确保Map键的类型一致性
             PythonValue keyValue = entry.getKey();
-            Object keyObject = keyValue.accept(this);  // 递归转换键
+            // 递归转换键
+            Object keyObject = keyValue.accept(this);
             String key = String.valueOf(keyObject);
             
             // 递归转换值
@@ -189,8 +192,10 @@ public class JavaObjectVisitor implements PythonValueVisitor<Object> {
     @Override
     public Object visitTuple(PythonValue.TupleValue tuple) {
         return tuple.getElements().stream()
-                .map(element -> element.accept(this))  // 递归转换每个元素
-                .toArray();  // 转换为Object[]
+                // 递归转换每个元素
+                .map(element -> element.accept(this))
+                // 转换为Object[]
+                .toArray();
     }
     
     /**
@@ -215,7 +220,9 @@ public class JavaObjectVisitor implements PythonValueVisitor<Object> {
     @Override
     public Object visitSet(PythonValue.SetValue set) {
         return set.getElements().stream()
-                .map(element -> element.accept(this))  // 递归转换每个元素
-                .toArray();  // 转换为Object[]
+                // 递归转换每个元素
+                .map(element -> element.accept(this))
+                // 转换为Object[]
+                .toArray();
     }
 }

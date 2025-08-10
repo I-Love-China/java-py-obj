@@ -38,14 +38,16 @@ package com.github.typist.lexer;
      */
     private String readString(LexerContext context, char quote) {
         StringBuilder result = new StringBuilder();
-        context.advance(); // 跳过开始引号
+        // 跳过开始引号
+        context.advance();
 
         while (context.getCurrentChar() != '\0' && context.getCurrentChar() != quote) {
             char ch = context.getCurrentChar();
 
             if (ch == '\\') {
                 // 处理转义字符
-                context.advance(); // 跳过反斜杠
+                // 跳过反斜杠
+                context.advance();
                 char escaped = context.getCurrentChar();
 
                 switch (escaped) {

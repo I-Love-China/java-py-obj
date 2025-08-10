@@ -20,31 +20,31 @@ class DispatchState implements LexerState {
 
         // 检查是否到达文件末尾
         if (context.getCurrentChar() == '\0') {
-            return false; // 结束分析
+            return false;
         }
 
         char currentChar = context.getCurrentChar();
 
         // 根据字符类型分发到相应状态
+        // 数字或负号 -> 数字状态
         if (Character.isDigit(currentChar) || currentChar == '-') {
-            // 数字或负号 -> 数字状态
             context.transitionToNumber();
-            return true; // 让主循环继续，下次会使用新状态
+            return true;
         }
+        // 引号 -> 字符串状态
         else if (currentChar == '\'' || currentChar == '\"') {
-            // 引号 -> 字符串状态  
             context.transitionToString();
-            return true; // 让主循环继续，下次会使用新状态
+            return true;
         }
+        // 字母或下划线 -> 标识符状态
         else if (Character.isLetter(currentChar) || currentChar == '_') {
-            // 字母或下划线 -> 标识符状态
             context.transitionToIdentifier();
-            return true; // 让主循环继续，下次会使用新状态
+            return true;
         }
+        // 可能是分隔符 -> 分隔符状态
         else {
-            // 可能是分隔符 -> 分隔符状态
             context.transitionToDelimiter();
-            return true; // 让主循环继续，下次会使用分隔符状态
+            return true;
         }
     }
 

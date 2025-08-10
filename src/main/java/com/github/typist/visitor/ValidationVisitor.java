@@ -155,7 +155,8 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
             // 基本类型特定验证
             if (value instanceof String) {
                 String str = (String) value;
-                if (str.length() > 10000) { // 防止过长字符串
+                if (str.length() > 10000) {
+                    // 防止过长字符串
                     return ValidationResult.failure(
                         "String too long: " + str.length() + " characters",
                         typeStatistics, maxDepthReached, totalElements

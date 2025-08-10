@@ -66,7 +66,8 @@ class LexerContext {
         
         while (currentChar != '\0') {
             if (!currentState.process(this)) {
-                break; // 状态处理失败，停止分析
+                // 状态处理失败，停止分析
+                break;
             }
         }
         

@@ -155,7 +155,8 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
         ArrayNode arrayNode = objectMapper.createArrayNode();
         
         for (PythonValue element : list.getElements()) {
-            JsonNode elementNode = element.accept(this);  // 递归转换
+            // 递归转换
+            JsonNode elementNode = element.accept(this);
             arrayNode.add(elementNode);
         }
         
@@ -223,7 +224,8 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
         ArrayNode arrayNode = objectMapper.createArrayNode();
         
         for (PythonValue element : tuple.getElements()) {
-            JsonNode elementNode = element.accept(this);  // 递归转换
+            // 递归转换
+            JsonNode elementNode = element.accept(this);
             arrayNode.add(elementNode);
         }
         
@@ -249,7 +251,8 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
         ArrayNode arrayNode = objectMapper.createArrayNode();
         
         for (PythonValue element : set.getElements()) {
-            JsonNode elementNode = element.accept(this);  // 递归转换
+            // 递归转换
+            JsonNode elementNode = element.accept(this);
             arrayNode.add(elementNode);
         }
         

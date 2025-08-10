@@ -63,13 +63,15 @@ class NumberState implements LexerState {
                 hasDot = true;
             }
             else {
-                break; // 遇到非数字字符，结束读取
+                // 遇到非数字字符，结束读取
+                break;
             }
         }
         
         // 验证是否为有效数字
         if (!hasDigits || (result.length() == 1 && result.charAt(0) == '-')) {
-            return ""; // 无效数字
+            // 无效数字
+            return "";
         }
         
         return result.toString();

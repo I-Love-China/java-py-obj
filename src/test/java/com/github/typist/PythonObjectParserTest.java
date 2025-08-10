@@ -34,8 +34,10 @@ public class PythonObjectParserTest {
         assertEquals("{}", parser.parseToJson("{}"));
         
         // 极大和极小整数
-        assertEquals("2147483647", parser.parseToJson("2147483647"));  // Integer.MAX_VALUE
-        assertEquals("-2147483648", parser.parseToJson("-2147483648")); // Integer.MIN_VALUE
+        // Integer.MAX_VALUE
+        assertEquals("2147483647", parser.parseToJson("2147483647"));
+        // Integer.MIN_VALUE
+        assertEquals("-2147483648", parser.parseToJson("-2147483648"));
         
         // 极大和极小浮点数
 //        assertEquals("1.7976931348623157E308", parser.parseToJson("1.7976931348623157E308"));
@@ -204,8 +206,10 @@ public class PythonObjectParserTest {
         assertEquals("[\"苹果\",\"香蕉\",\"橙子\"]", parser.parseToJson("['苹果', '香蕉', '橙子']"));
         
         // 特殊Unicode字符
-        assertEquals("\"❤\"", parser.parseToJson("'❤'"));  // 心形符号
-        assertEquals("\"©\"", parser.parseToJson("'©'"));   // 版权符号
+        // 心形符号
+        assertEquals("\"❤\"", parser.parseToJson("'❤'"));
+        // 版权符号
+        assertEquals("\"©\"", parser.parseToJson("'©'"));
     }
 
     // ==================== 错误处理测试 ====================

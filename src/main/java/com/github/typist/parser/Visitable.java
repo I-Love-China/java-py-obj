@@ -68,7 +68,8 @@ public interface Visitable {
      * ```java
      * @Override
      * public <T> T accept(PythonValueVisitor<T> visitor) {
-     *     return visitor.visitXxx(this);  // Xxx为具体类型名
+     *     // Xxx为具体类型名
+     *     return visitor.visitXxx(this);
      * }
      * ```
      * 
