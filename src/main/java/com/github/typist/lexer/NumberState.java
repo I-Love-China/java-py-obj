@@ -1,7 +1,5 @@
 package com.github.typist.lexer;
 
-import com.github.typist.TokenType;
-
 /**
  * 数字识别状态
  * 

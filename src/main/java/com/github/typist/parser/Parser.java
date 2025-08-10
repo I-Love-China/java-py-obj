@@ -1,5 +1,7 @@
-package com.github.typist;
+package com.github.typist.parser;
 
+import com.github.typist.lexer.Token;
+import com.github.typist.lexer.TokenType;
 import java.util.*;
 
 /**

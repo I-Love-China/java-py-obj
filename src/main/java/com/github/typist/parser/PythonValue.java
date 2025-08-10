@@ -1,17 +1,23 @@
-package com.github.typist;
+package com.github.typist.parser;
 
+import com.github.typist.visitor.PythonValueVisitor;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Python值对象的抽象表示
  * 
- * 这个类层次结构实现了Python对象到Java对象的映射，是语义分析阶段的核心数据结构。
- * 它使用了访问者模式（Visitor Pattern）的变体，通过抽象方法定义了统一的转换接口。
+ * 这个类层次结构实现了Python对象到Java对象的映射，是语法分析阶段构建的抽象语法树(AST)的核心数据结构。
+ * 它使用了访问者模式（Visitor Pattern），通过accept方法支持各种操作的解耦实现。
+ * 
+ * 编译原理中的作用：
+ * - 作为语法分析器(Parser)的输出结果
+ * - 表示Python源码的抽象语法结构
+ * - 为后续的语义分析和代码生成提供统一接口
  * 
  * 设计模式应用：
  * - 抽象工厂模式：不同类型的Python值有不同的具体实现
- * - 访问者模式：toJavaObject()方法实现了对不同类型值的统一处理
+ * - 访问者模式：通过accept方法支持各种转换和处理操作
  * - 组合模式：容器类型（List、Dict、Tuple、Set）可以包含其他PythonValue
  * 
  * 类型层次结构：
@@ -34,24 +40,8 @@ import java.util.Map;
  * @author Generated with Claude Code
  * @version 1.0
  */
-public abstract class PythonValue {
+public abstract class PythonValue implements Visitable {
     
-    /**
-     * 将Python值转换为对应的Java对象
-     * 
-     * 这是访问者模式的核心方法，每个具体的Python值类型都必须实现
-     * 自己的转换逻辑。这种设计使得添加新的操作变得容易，而不需要
-     * 修改现有的类型定义。
-     * 
-     * 转换原则：
-     * - 保持数据的语义一致性
-     * - 选择合适的Java类型表示
-     * - 递归处理嵌套结构
-     * - 处理类型转换异常
-     * 
-     * @return 转换后的Java对象，类型取决于具体的Python值类型
-     */
-    public abstract Object toJavaObject();
 
     // ========================= 基本类型实现 =========================
     
@@ -88,11 +78,24 @@ public abstract class PythonValue {
         }
 
         /**
-         * 基本类型的转换：直接返回存储的Java对象
-         * 因为在词法分析阶段已经完成了类型转换
+         * 接受访问者的访问
+         * 
+         * 实现访问者模式的双分派机制，将自己作为PrimitiveValue传递给访问者。
+         * 
+         * @param visitor 访问者对象
+         * @return 访问者操作的结果
          */
         @Override
-        public Object toJavaObject() {
+        public <T> T accept(PythonValueVisitor<T> visitor) {
+            return visitor.visitPrimitive(this);
+        }
+
+        /**
+         * 获取基本类型的值
+         * 
+         * @return 存储的基本类型值
+         */
+        public Object getValue() {
             return value;
         }
 
@@ -148,14 +151,16 @@ public abstract class PythonValue {
         }
 
         /**
-         * 将Python列表转换为Java对象数组
-         * 使用流式API递归转换每个元素
+         * 接受访问者的访问
+         * 
+         * 实现访问者模式的双分派机制，将自己作为ListValue传递给访问者。
+         * 
+         * @param visitor 访问者对象
+         * @return 访问者操作的结果
          */
         @Override
-        public Object toJavaObject() {
-            return elements.stream()
-                    .map(PythonValue::toJavaObject)  // 递归转换每个元素
-                    .toArray();  // 转换为Object[]
+        public <T> T accept(PythonValueVisitor<T> visitor) {
+            return visitor.visitList(this);
         }
 
         /**
@@ -212,29 +217,16 @@ public abstract class PythonValue {
         }
 
         /**
-         * 将Python字典转换为Java Map
+         * 接受访问者的访问
          * 
-         * 转换过程：
-         * 1. 创建新的HashMap<String, Object>
-         * 2. 遍历所有键值对
-         * 3. 将键转换为字符串（调用toJavaObject()然后String.valueOf）
-         * 4. 递归转换值对象
-         * 5. 存入结果映射
+         * 实现访问者模式的双分派机制，将自己作为DictValue传递给访问者。
          * 
-         * 潜在问题：键冲突处理
-         * 如果多个键转换为相同的字符串，后面的会覆盖前面的。
+         * @param visitor 访问者对象
+         * @return 访问者操作的结果
          */
         @Override
-        public Object toJavaObject() {
-            java.util.Map<String, Object> result = new java.util.HashMap<>();
-            for (Map.Entry<PythonValue, PythonValue> entry : entries.entrySet()) {
-                // 将键转换为字符串，确保JSON兼容性
-                String key = String.valueOf(entry.getKey().toJavaObject());
-                // 递归转换值
-                Object value = entry.getValue().toJavaObject();
-                result.put(key, value);
-            }
-            return result;
+        public <T> T accept(PythonValueVisitor<T> visitor) {
+            return visitor.visitDict(this);
         }
 
         /**
@@ -289,19 +281,20 @@ public abstract class PythonValue {
         }
 
         /**
-         * 将Python元组转换为Java对象数组
-         * 转换逻辑与ListValue相同，因为JSON不区分列表和元组
+         * 接受访问者的访问
+         * 
+         * 实现访问者模式的双分派机制，将自己作为TupleValue传递给访问者。
+         * 
+         * @param visitor 访问者对象
+         * @return 访问者操作的结果
          */
         @Override
-        public Object toJavaObject() {
-            return elements.stream()
-                    .map(PythonValue::toJavaObject)  // 递归转换每个元素
-                    .toArray();  // 转换为Object[]
+        public <T> T accept(PythonValueVisitor<T> visitor) {
+            return visitor.visitTuple(this);
         }
 
         /**
          * 返回元组的字符串表示，使用Python风格的圆括号格式
-         * 格式：(元素1, 元素2, 元素3)
          */
         @Override
         public String toString() {
@@ -358,14 +351,16 @@ public abstract class PythonValue {
         }
 
         /**
-         * 将Python集合转换为Java对象数组
-         * 转换逻辑与ListValue相同，因为JSON不支持集合类型
+         * 接受访问者的访问
+         * 
+         * 实现访问者模式的双分派机制，将自己作为SetValue传递给访问者。
+         * 
+         * @param visitor 访问者对象
+         * @return 访问者操作的结果
          */
         @Override
-        public Object toJavaObject() {
-            return elements.stream()
-                    .map(PythonValue::toJavaObject)  // 递归转换每个元素
-                    .toArray();  // 转换为Object[]
+        public <T> T accept(PythonValueVisitor<T> visitor) {
+            return visitor.visitSet(this);
         }
 
         /**

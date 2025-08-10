@@ -1,6 +1,6 @@
 package com.github.typist.lexer;
 
-import com.github.typist.TokenType;
+import com.github.typist.lexer.TokenType;
 
 /**
  * 分隔符识别状态
@@ -13,7 +13,7 @@ import com.github.typist.TokenType;
  * @author Generated with Claude Code
  * @version 1.0
  */
-class DelimiterState implements LexerState {
+public class DelimiterState implements LexerState {
 
     @Override
     public boolean process(LexerContext context) {

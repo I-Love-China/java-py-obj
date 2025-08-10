@@ -1,9 +1,13 @@
 package com.github.typist;
 
 import com.github.typist.lexer.Lexer;
+import com.github.typist.lexer.Token;
+import com.github.typist.parser.Parser;
+import com.github.typist.parser.PythonValue;
+import com.github.typist.visitor.JsonNodeVisitor;
+import com.github.typist.visitor.JavaObjectVisitor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
 import java.util.List;
 
 /**
@@ -60,6 +64,7 @@ import java.util.List;
  * 设计模式应用：
  * - **门面模式 (Facade Pattern)**：隐藏复杂的编译流程细节
  * - **管道模式 (Pipeline Pattern)**：数据在各个阶段间流转
+ * - **访问者模式 (Visitor Pattern)**：类型转换逻辑与数据结构分离
  * - **策略模式 (Strategy Pattern)**：支持多种输出格式
  * - **模板方法模式**：标准化的解析流程
  * 
@@ -83,40 +88,53 @@ public class PythonObjectParser {
     /**
      * Jackson JSON处理器
      * 
-     * 用于JSON数据的序列化和反序列化，以及JsonNode对象的创建。
-     * Jackson是业界标准的JSON处理库，提供了：
-     * - 高性能的JSON解析和生成
-     * - 灵活的数据绑定
-     * - JsonNode树模型API
-     * - 线程安全的操作
-     * 
-     * 在本系统中的作用：
-     * 1. 创建各种类型的JsonNode（ObjectNode、ArrayNode等）
-     * 2. 将JsonNode序列化为JSON字符串
-     * 3. 提供类型安全的JSON操作API
+     * 用于JSON字符串的序列化，线程安全。
+     * 在访问者模式重构后，主要用于最终的JSON字符串生成。
      */
     private final ObjectMapper objectMapper;
+    
+    /**
+     * JSON节点转换访问者
+     * 
+     * 使用访问者模式实现PythonValue到JsonNode的转换。
+     * 访问者模式的优势：
+     * - 符合开放封闭原则：新增类型时无需修改现有代码
+     * - 职责分离：转换逻辑与业务流程分离
+     * - 易于扩展：可以轻松添加新的输出格式
+     * - 提高可测试性：访问者可以独立测试
+     */
+    private final JsonNodeVisitor jsonNodeVisitor;
+    
+    /**
+     * Java对象转换访问者
+     * 
+     * 使用访问者模式实现PythonValue到Java原生对象的转换。
+     * 直接输出Java对象，跳过JSON序列化步骤，提高性能。
+     */
+    private final JavaObjectVisitor javaObjectVisitor;
 
     // ========================= 构造函数 =========================
     
     /**
      * 构造Python对象解析器
      * 
-     * 初始化JSON处理器，准备开始解析工作。
-     * 使用默认配置的ObjectMapper，适合大多数使用场景。
+     * 初始化JSON处理器和访问者对象，准备开始解析工作。
+     * 使用访问者模式重构后，转换逻辑委托给专门的访问者处理。
      * 
-     * ObjectMapper配置：
-     * - 使用默认的序列化配置
-     * - 支持所有标准JSON数据类型
-     * - 紧凑输出格式（无多余空格）
+     * 组件初始化：
+     * - ObjectMapper：用于JSON序列化
+     * - JsonNodeVisitor：处理到JsonNode的转换
+     * - JavaObjectVisitor：处理到Java对象的转换
      * 
-     * 设计考虑：
-     * - 使用final确保线程安全
-     * - 延迟初始化避免不必要的开销
-     * - 可扩展：未来可支持自定义配置
+     * 设计优势：
+     * - 职责分离：解析器专注于流程编排
+     * - 可扩展性：可以轻松添加新的访问者
+     * - 可测试性：每个组件都可以独立测试
      */
     public PythonObjectParser() {
         this.objectMapper = new ObjectMapper();
+        this.jsonNodeVisitor = new JsonNodeVisitor(objectMapper);
+        this.javaObjectVisitor = new JavaObjectVisitor();
     }
 
     // ========================= 公共API方法 =========================
@@ -179,8 +197,8 @@ public class PythonObjectParser {
             Parser parser = new Parser(tokens);
             PythonValue pythonValue = parser.parse();
             
-            // 第3阶段：语义分析 - AST → JsonNode树
-            JsonNode jsonNode = convertToJsonNode(pythonValue);
+            // 第3阶段：使用访问者模式转换 - AST → JsonNode树
+            JsonNode jsonNode = pythonValue.accept(jsonNodeVisitor);
             
             // 第4阶段：代码生成 - JsonNode树 → JSON字符串
             return objectMapper.writeValueAsString(jsonNode);
@@ -235,8 +253,8 @@ public class PythonObjectParser {
             Parser parser = new Parser(tokens);
             PythonValue pythonValue = parser.parse();
             
-            // 第3阶段：直接转换为Java对象（跳过JsonNode）
-            return pythonValue.toJavaObject();
+            // 第3阶段：使用访问者模式直接转换为Java对象
+            return pythonValue.accept(javaObjectVisitor);
             
         } catch (Exception e) {
             // 统一错误处理
@@ -244,101 +262,6 @@ public class PythonObjectParser {
         }
     }
 
-    // ========================= 内部转换逻辑 =========================
-    
-    /**
-     * 将PythonValue对象转换为Jackson JsonNode对象
-     * 
-     * 这是整个编译流程中的核心转换方法，实现了从抽象语法树到JSON节点树的映射。
-     * 该方法使用访问者模式的变体，通过instanceof检查来处理不同类型的Python值。
-     * 
-     * 转换映射规则：
-     * ┌─────────────────┬──────────────────┬──────────────────────────────┐
-     * │ Python类型      │ PythonValue类型  │ JsonNode类型                 │
-     * ├─────────────────┼──────────────────┼──────────────────────────────┤
-     * │ None            │ PrimitiveValue   │ NullNode                     │
-     * │ bool            │ PrimitiveValue   │ BooleanNode                  │
-     * │ int             │ PrimitiveValue   │ IntNode/LongNode             │
-     * │ float           │ PrimitiveValue   │ DoubleNode                   │
-     * │ str             │ PrimitiveValue   │ TextNode                     │
-     * │ list            │ ListValue        │ ArrayNode                    │
-     * │ tuple           │ TupleValue       │ ArrayNode                    │
-     * │ set             │ SetValue         │ ArrayNode                    │
-     * │ dict            │ DictValue        │ ObjectNode                   │
-     * └─────────────────┴──────────────────┴──────────────────────────────┘
-     * 
-     * 递归处理策略：
-     * 1. **基本类型**：直接创建对应的JsonNode
-     * 2. **容器类型**：递归转换每个子元素
-     * 3. **字典类型**：将键转换为字符串，递归转换值
-     * 
-     * 类型安全性：
-     * - 所有instanceof检查确保类型匹配
-     * - 使用Jackson的类型安全API创建节点
-     * - 异常处理确保转换失败时提供清晰的错误信息
-     * 
-     * 性能考虑：
-     * - 时间复杂度：O(n)，n为节点总数（包括嵌套节点）
-     * - 空间复杂度：O(h + n)，h为嵌套深度，n为节点数
-     * - 使用Jackson的高效节点创建API
-     * 
-     * 设计模式：
-     * - **访问者模式**：通过类型检查分派到不同处理逻辑
-     * - **递归组合**：处理嵌套的数据结构
-     * - **工厂方法**：使用ObjectMapper创建不同类型的节点
-     * 
-     * @param pythonValue 要转换的Python值对象，不能为null
-     * @return 对应的JsonNode对象，保证类型正确
-     * @throws IllegalArgumentException 如果遇到不支持的Python值类型
-     * @throws RuntimeException 如果转换过程中发生意外错误
-     */
-    private JsonNode convertToJsonNode(PythonValue pythonValue) {
-        if (pythonValue instanceof PythonValue.PrimitiveValue) {
-            Object value = pythonValue.toJavaObject();
-            if (value == null) {
-                return NullNode.getInstance();
-            } else if (value instanceof Boolean) {
-                return BooleanNode.valueOf((Boolean) value);
-            } else if (value instanceof Integer) {
-                return IntNode.valueOf((Integer) value);
-            } else if (value instanceof Long) {
-                return LongNode.valueOf((Long) value);
-            } else if (value instanceof Double) {
-                return DoubleNode.valueOf((Double) value);
-            } else if (value instanceof String) {
-                return TextNode.valueOf((String) value);
-            }
-        } else if (pythonValue instanceof PythonValue.ListValue) {
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            for (PythonValue element : ((PythonValue.ListValue) pythonValue).getElements()) {
-                arrayNode.add(convertToJsonNode(element));
-            }
-            return arrayNode;
-        } else if (pythonValue instanceof PythonValue.TupleValue) {
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            for (PythonValue element : ((PythonValue.TupleValue) pythonValue).getElements()) {
-                arrayNode.add(convertToJsonNode(element));
-            }
-            return arrayNode;
-        } else if (pythonValue instanceof PythonValue.SetValue) {
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            for (PythonValue element : ((PythonValue.SetValue) pythonValue).getElements()) {
-                arrayNode.add(convertToJsonNode(element));
-            }
-            return arrayNode;
-        } else if (pythonValue instanceof PythonValue.DictValue) {
-            ObjectNode objectNode = objectMapper.createObjectNode();
-            for (java.util.Map.Entry<PythonValue, PythonValue> entry : 
-                 ((PythonValue.DictValue) pythonValue).getEntries().entrySet()) {
-                String key = String.valueOf(entry.getKey().toJavaObject());
-                JsonNode value = convertToJsonNode(entry.getValue());
-                objectNode.set(key, value);
-            }
-            return objectNode;
-        }
-        
-        throw new IllegalArgumentException("Unsupported Python value type: " + pythonValue.getClass());
-    }
 
     // ========================= 演示和测试方法 =========================
     

@@ -1,6 +1,5 @@
 package com.github.typist.lexer;
 
-import com.github.typist.TokenType;
 
 /**
  * 字符串识别状态
@@ -13,7 +12,7 @@ import com.github.typist.TokenType;
  * @author Generated with Claude Code
  * @version 1.0
  */
-class StringState implements LexerState {
+public class StringState implements LexerState {
 
     @Override
     public boolean process(LexerContext context) {

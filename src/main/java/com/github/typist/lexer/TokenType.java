@@ -1,4 +1,4 @@
-package com.github.typist;
+package com.github.typist.lexer;
 
 /**
  * 词法分析中的记号类型枚举

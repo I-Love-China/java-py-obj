@@ -1,6 +1,5 @@
 package com.github.typist.lexer;
 
-import com.github.typist.Token;
 import java.util.List;
 
 /**

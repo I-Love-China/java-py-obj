@@ -1,6 +1,5 @@
 package com.github.typist.lexer;
 
-import com.github.typist.TokenType;
 
 /**
  * 标识符识别状态
