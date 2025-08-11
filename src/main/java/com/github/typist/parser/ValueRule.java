@@ -15,17 +15,17 @@ import java.util.Map;
  * @author typist
  */
 class ValueRule implements GrammarRule {
-    
+
     private final Map<TokenType, GrammarRule> ruleMap;
-    
+
     public ValueRule() {
         this.ruleMap = new HashMap<>();
         initializeRules();
     }
-    
+
     private void initializeRules() {
         PrimitiveRule primitiveRule = new PrimitiveRule();
-        
+
         ruleMap.put(TokenType.NUMBER, primitiveRule);
         ruleMap.put(TokenType.STRING, primitiveRule);
         ruleMap.put(TokenType.BOOLEAN, primitiveRule);
@@ -34,19 +34,19 @@ class ValueRule implements GrammarRule {
         ruleMap.put(TokenType.LEFT_BRACE, new DictOrSetRule(this));
         ruleMap.put(TokenType.LEFT_PAREN, new TupleRule(this));
     }
-    
+
     @Override
     public PythonValue parse(ParseContext context) {
         TokenType currentType = context.currentType();
         GrammarRule rule = ruleMap.get(currentType);
-        
+
         if (rule == null) {
             throw new IllegalArgumentException(
                 "语法错误：在位置 " + context.current().getPosition() + 
                 " 处遇到意外的记号 " + currentType
             );
         }
-        
+
         return rule.parse(context);
     }
 }

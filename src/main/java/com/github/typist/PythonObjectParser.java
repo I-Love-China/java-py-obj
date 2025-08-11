@@ -11,31 +11,31 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
 /**
- * Python对象解析器 - 编译器系统的顶层门面类
+ * Python 对象解析器 - 编译器系统的顶层门面类
  * 
- * 这是整个Python对象到JSON转换系统的主入口，集成了完整的编译流水线：
+ * 这是整个 Python 对象到 JSON 转换系统的主入口，集成了完整的编译流水线：
  * 词法分析 → 语法分析 → 语义分析 → 代码生成 → 输出格式化
  * 
  * 系统架构：
  * ┌─────────────┐    ┌──────────────┐    ┌──────────────┐    ┌─────────────┐
  * │ 输入字符串   │ -> │  词法分析器   │ -> │  语法分析器   │ -> │ JSON转换器  │
- * │ Python语法  │    │   (Lexer)    │    │  (Parser)   │    │ (Converter) │
+ * │ Python 语法  │    │   (Lexer)    │    │  (Parser)   │    │ (Converter) │
  * └─────────────┘    └──────────────┘    └──────────────┘    └─────────────┘
  *         ↓                   ↓                   ↓                   ↓
- * "'hello world'"     Token序列        PythonValue        JSON字符串
+ * "'hello world'"     Token 序列        PythonValue        JSON 字符串
  * [1, 2, 3]          NUMBER, COMMA...   ListValue         "[1,2,3]"
  * {'key': 'value'}   LBRACE, STRING...  DictValue         {"key":"value"}
  * 
  * 核心特性：
  * 1. **完整的编译流程**：实现了从源码到目标格式的完整转换
- * 2. **多格式输出**：支持JSON字符串和Java对象两种输出格式
+ * 2. **多格式输出**：支持 JSON 字符串和 Java 对象两种输出格式
  * 3. **错误处理与报告**：提供详细的错误信息和位置定位
- * 4. **类型安全转换**：确保Python类型到JSON类型的正确映射
+ * 4. **类型安全转换**：确保 Python 类型到 JSON 类型的正确映射
  * 5. **嵌套结构支持**：处理任意深度的嵌套数据结构
  * 
- * 支持的Python数据类型：
+ * 支持的 Python 数据类型：
  * ┌─────────────┬─────────────────┬──────────────────┬─────────────────┐
- * │ Python类型  │     示例        │   中间表示       │   JSON输出      │
+ * │ Python 类型  │     示例        │   中间表示       │   JSON 输出      │
  * ├─────────────┼─────────────────┼──────────────────┼─────────────────┤
  * │ int         │ 42, -10         │ PrimitiveValue   │ 42, -10         │
  * │ float       │ 3.14, -2.5      │ PrimitiveValue   │ 3.14, -2.5      │
@@ -86,17 +86,17 @@ public class PythonObjectParser {
     // ========================= 核心依赖 =========================
     
     /**
-     * Jackson JSON处理器
+     * Jackson JSON 处理器
      * 
-     * 用于JSON字符串的序列化，线程安全。
-     * 在访问者模式重构后，主要用于最终的JSON字符串生成。
+     * 用于 JSON 字符串的序列化，线程安全。
+     * 在访问者模式重构后，主要用于最终的 JSON 字符串生成。
      */
     private final ObjectMapper objectMapper;
     
     /**
-     * JSON节点转换访问者
+     * JSON 节点转换访问者
      * 
-     * 使用访问者模式实现PythonValue到JsonNode的转换。
+     * 使用访问者模式实现 PythonValue 到 JsonNode 的转换。
      * 访问者模式的优势：
      * - 符合开放封闭原则：新增类型时无需修改现有代码
      * - 职责分离：转换逻辑与业务流程分离
@@ -106,25 +106,25 @@ public class PythonObjectParser {
     private final JsonNodeVisitor jsonNodeVisitor;
     
     /**
-     * Java对象转换访问者
+     * Java 对象转换访问者
      * 
-     * 使用访问者模式实现PythonValue到Java原生对象的转换。
-     * 直接输出Java对象，跳过JSON序列化步骤，提高性能。
+     * 使用访问者模式实现 PythonValue 到 Java 原生对象的转换。
+     * 直接输出 Java 对象，跳过 JSON 序列化步骤，提高性能。
      */
     private final JavaObjectVisitor javaObjectVisitor;
 
     // ========================= 构造函数 =========================
     
     /**
-     * 构造Python对象解析器
+     * 构造 Python 对象解析器
      * 
-     * 初始化JSON处理器和访问者对象，准备开始解析工作。
+     * 初始化 JSON 处理器和访问者对象，准备开始解析工作。
      * 使用访问者模式重构后，转换逻辑委托给专门的访问者处理。
      * 
      * 组件初始化：
-     * - ObjectMapper：用于JSON序列化
-     * - JsonNodeVisitor：处理到JsonNode的转换
-     * - JavaObjectVisitor：处理到Java对象的转换
+     * - ObjectMapper：用于 JSON 序列化
+     * - JsonNodeVisitor：处理到 JsonNode 的转换
+     * - JavaObjectVisitor：处理到 Java 对象的转换
      * 
      * 设计优势：
      * - 职责分离：解析器专注于流程编排
@@ -140,10 +140,10 @@ public class PythonObjectParser {
     // ========================= 公共API方法 =========================
     
     /**
-     * 将Python对象字符串解析为JSON字符串
+     * 将 Python 对象字符串解析为 JSON 字符串
      * 
-     * 这是最常用的API方法，实现了从Python语法到JSON字符串的直接转换。
-     * 整个转换过程经历了编译器的主要阶段，最终输出标准的JSON格式。
+     * 这是最常用的 API 方法，实现了从 Python 语法到 JSON 字符串的直接转换。
+     * 整个转换过程经历了编译器的主要阶段，最终输出标准的 JSON 格式。
      * 
      * 转换流程：
      * 1. **词法分析阶段**：将输入字符串分解为记号序列
@@ -151,15 +151,15 @@ public class PythonObjectParser {
      *    输出: [LBRACE, STRING, COLON, STRING, RBRACE, EOF]
      * 
      * 2. **语法分析阶段**：将记号序列解析为抽象语法树
-     *    输入: Token序列
+     *    输入: Token 序列
      *    输出: DictValue{PrimitiveValue("name") -> PrimitiveValue("John")}
      * 
-     * 3. **语义分析阶段**：将AST转换为JsonNode树
-     *    输入: PythonValue对象
+     * 3. **语义分析阶段**：将 AST 转换为 JsonNode 树
+     *    输入: PythonValue 对象
      *    输出: ObjectNode{"name" -> TextNode("John")}
      * 
-     * 4. **代码生成阶段**：将JsonNode序列化为JSON字符串
-     *    输入: JsonNode树
+     * 4. **代码生成阶段**：将 JsonNode 序列化为 JSON 字符串
+     *    输入: JsonNode 树
      *    输出: "{\"name\":\"John\"}"
      * 
      * 支持的输入格式：
@@ -169,43 +169,43 @@ public class PythonObjectParser {
      * - 混合类型：[1, 'hello', True, None]
      * 
      * 输出特性：
-     * - 标准JSON格式，符合RFC 7159规范
+     * - 标准 JSON 格式，符合 RFC 7159 规范
      * - 紧凑输出，无多余空格
-     * - UTF-8编码，支持Unicode字符
+     * - UTF-8 编码，支持 Unicode 字符
      * - 数字类型保持精度
      * 
      * 错误处理：
      * - 词法错误：无效字符、未闭合字符串等
      * - 语法错误：缺失分隔符、括号不匹配等
      * - 类型错误：不支持的Python类型等
-     * - 所有错误都包装为RuntimeException，包含详细错误信息
+     * - 所有错误都包装为 RuntimeException，包含详细错误信息
      * 
-     * @param pythonString Python对象的字符串表示，不能为null
-     * @return JSON格式的字符串，保证格式正确
+     * @param pythonString Python 对象的字符串表示，不能为 null
+     * @return JSON 格式的字符串，保证格式正确
      * @throws RuntimeException 如果解析过程中发生任何错误
      * @throws IllegalArgumentException 如果输入为null或格式无效
      * 
-     * @see #parseToObject(String) 如需Java对象输出
+     * @see #parseToObject(String) 如需 Java 对象输出
      */
     public String parseToJson(String pythonString) {
         try {
-            // 第1阶段：词法分析 - 字符流 → 记号流
+            // 第 1 阶段：词法分析 - 字符流 → 记号流
             Lexer lexer = new Lexer(pythonString);
             List<Token> tokens = lexer.tokenize();
             
-            // 第2阶段：语法分析 - 记号流 → 抽象语法树
+            // 第 2 阶段：语法分析 - 记号流 → 抽象语法树
             Parser parser = new Parser(tokens);
             PythonValue pythonValue = parser.parse();
             
-            // 第3阶段：使用访问者模式转换 - AST → JsonNode树
+            // 第 3 阶段：使用访问者模式转换 - AST → JsonNode 树
             JsonNode jsonNode = pythonValue.accept(jsonNodeVisitor);
             
-            // 第4阶段：代码生成 - JsonNode树 → JSON字符串
+            // 第 4 阶段：代码生成 - JsonNode 树 → JSON 字符串
             return objectMapper.writeValueAsString(jsonNode);
             
         } catch (Exception e) {
             // 统一错误处理：包装所有异常为运行时异常
-            throw new RuntimeException("Python对象解析失败: " + e.getMessage(), e);
+            throw new RuntimeException("Python 对象解析失败: " + e.getMessage(), e);
         }
     }
 
@@ -246,19 +246,19 @@ public class PythonObjectParser {
      */
     public Object parseToObject(String pythonString) {
         try {
-            // 第1-2阶段：词法和语法分析（复用相同逻辑）
+            // 第 1-2 阶段：词法和语法分析（复用相同逻辑）
             Lexer lexer = new Lexer(pythonString);
             List<Token> tokens = lexer.tokenize();
             
             Parser parser = new Parser(tokens);
             PythonValue pythonValue = parser.parse();
             
-            // 第3阶段：使用访问者模式直接转换为Java对象
+            // 第 3 阶段：使用访问者模式直接转换为 Java 对象
             return pythonValue.accept(javaObjectVisitor);
             
         } catch (Exception e) {
             // 统一错误处理
-            throw new RuntimeException("Python对象解析失败: " + e.getMessage(), e);
+            throw new RuntimeException("Python 对象解析失败: " + e.getMessage(), e);
         }
     }
 

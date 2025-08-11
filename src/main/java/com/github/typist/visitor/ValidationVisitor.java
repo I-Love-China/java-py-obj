@@ -8,8 +8,8 @@ import java.util.Map;
 /**
  * 数据验证访问者
  * 
- * 实现访问者模式的具体访问者，用于验证PythonValue对象的数据完整性和结构合理性。
- * 这个访问者演示了访问者模式的可扩展性 - 在不修改现有PythonValue类的情况下，
+ * 实现访问者模式的具体访问者，用于验证 PythonValue 对象的数据完整性和结构合理性。
+ * 这个访问者演示了访问者模式的可扩展性 - 在不修改现有 PythonValue 类的情况下，
  * 增加了新的数据验证功能。
  * 
  * 验证功能：
@@ -26,7 +26,7 @@ import java.util.Map;
  * 
  * 扩展性演示：
  * 这个类展示了访问者模式的核心优势：
- * 1. 无需修改PythonValue类就能添加新功能
+ * 1. 无需修改 PythonValue 类就能添加新功能
  * 2. 保持了单一职责原则
  * 3. 可以轻松添加更多验证规则
  * 4. 与现有转换访问者完全解耦
@@ -42,17 +42,17 @@ import java.util.Map;
  * @see PythonValue
  */
 public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.ValidationResult> {
-    
+
     /**
      * 最大允许的嵌套深度，防止栈溢出
      */
     private static final int MAX_NESTING_DEPTH = 100;
-    
+
     /**
      * 当前访问的嵌套深度
      */
     private int currentDepth = 0;
-    
+
     /**
      * 验证结果数据类
      * 
@@ -65,7 +65,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
         private final Map<String, Integer> typeStatistics;
         private final int maxDepth;
         private final int totalElements;
-        
+
         /**
          * 构造验证结果
          * 
@@ -84,7 +84,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
             this.maxDepth = maxDepth;
             this.totalElements = totalElements;
         }
-        
+
         /**
          * 创建验证通过的结果
          */
@@ -92,7 +92,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                                              int maxDepth, int totalElements) {
             return new ValidationResult(true, null, typeStatistics, maxDepth, totalElements);
         }
-        
+
         /**
          * 创建验证失败的结果
          */
@@ -101,14 +101,14 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                                              int maxDepth, int totalElements) {
             return new ValidationResult(false, errorMessage, typeStatistics, maxDepth, totalElements);
         }
-        
+
         // Getters
         public boolean isValid() { return valid; }
         public String getErrorMessage() { return errorMessage; }
         public Map<String, Integer> getTypeStatistics() { return new HashMap<>(typeStatistics); }
         public int getMaxDepth() { return maxDepth; }
         public int getTotalElements() { return totalElements; }
-        
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -124,14 +124,14 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
             return sb.toString();
         }
     }
-    
+
     /**
      * 类型统计收集器
      */
     private final Map<String, Integer> typeStatistics = new HashMap<>();
     private int totalElements = 0;
     private int maxDepthReached = 0;
-    
+
     /**
      * 访问基本类型值，进行基础验证
      * 
@@ -146,12 +146,12 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
         currentDepth++;
         maxDepthReached = Math.max(maxDepthReached, currentDepth);
         totalElements++;
-        
+
         try {
             Object value = primitive.getValue();
             String typeName = value == null ? "null" : value.getClass().getSimpleName();
             typeStatistics.merge(typeName, 1, Integer::sum);
-            
+
             // 基本类型特定验证
             if (value instanceof String) {
                 String str = (String) value;
@@ -171,14 +171,14 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                     );
                 }
             }
-            
+
             return ValidationResult.success(typeStatistics, maxDepthReached, totalElements);
-            
+
         } finally {
             currentDepth--;
         }
     }
-    
+
     /**
      * 访问列表类型值，进行容器验证
      */
@@ -186,7 +186,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
     public ValidationResult visitList(PythonValue.ListValue list) {
         return validateContainer("List", list.getElements());
     }
-    
+
     /**
      * 访问字典类型值，进行键值对验证
      */
@@ -194,7 +194,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
     public ValidationResult visitDict(PythonValue.DictValue dict) {
         currentDepth++;
         maxDepthReached = Math.max(maxDepthReached, currentDepth);
-        
+
         try {
             // 检查嵌套深度
             if (currentDepth > MAX_NESTING_DEPTH) {
@@ -203,10 +203,10 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                     typeStatistics, maxDepthReached, totalElements
                 );
             }
-            
+
             typeStatistics.merge("Dict", 1, Integer::sum);
             totalElements++;
-            
+
             // 验证每个键值对
             for (Map.Entry<PythonValue, PythonValue> entry : dict.getEntries().entrySet()) {
                 // 验证键
@@ -214,21 +214,21 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                 if (!keyResult.isValid()) {
                     return keyResult;
                 }
-                
+
                 // 验证值
                 ValidationResult valueResult = entry.getValue().accept(this);
                 if (!valueResult.isValid()) {
                     return valueResult;
                 }
             }
-            
+
             return ValidationResult.success(typeStatistics, maxDepthReached, totalElements);
-            
+
         } finally {
             currentDepth--;
         }
     }
-    
+
     /**
      * 访问元组类型值，进行容器验证
      */
@@ -236,7 +236,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
     public ValidationResult visitTuple(PythonValue.TupleValue tuple) {
         return validateContainer("Tuple", tuple.getElements());
     }
-    
+
     /**
      * 访问集合类型值，进行容器验证
      */
@@ -244,7 +244,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
     public ValidationResult visitSet(PythonValue.SetValue set) {
         return validateContainer("Set", set.getElements());
     }
-    
+
     /**
      * 通用容器验证逻辑
      * 
@@ -256,7 +256,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                                              java.util.List<PythonValue> elements) {
         currentDepth++;
         maxDepthReached = Math.max(maxDepthReached, currentDepth);
-        
+
         try {
             // 检查嵌套深度
             if (currentDepth > MAX_NESTING_DEPTH) {
@@ -265,10 +265,10 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                     typeStatistics, maxDepthReached, totalElements
                 );
             }
-            
+
             typeStatistics.merge(containerType, 1, Integer::sum);
             totalElements++;
-            
+
             // 检查容器大小合理性（防止内存溢出）
             if (elements.size() > 100000) {
                 return ValidationResult.failure(
@@ -276,7 +276,7 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                     typeStatistics, maxDepthReached, totalElements
                 );
             }
-            
+
             // 递归验证每个元素
             for (int i = 0; i < elements.size(); i++) {
                 PythonValue element = elements.get(i);
@@ -286,20 +286,20 @@ public class ValidationVisitor implements PythonValueVisitor<ValidationVisitor.V
                         typeStatistics, maxDepthReached, totalElements
                     );
                 }
-                
+
                 ValidationResult elementResult = element.accept(this);
                 if (!elementResult.isValid()) {
                     return elementResult;
                 }
             }
-            
+
             return ValidationResult.success(typeStatistics, maxDepthReached, totalElements);
-            
+
         } finally {
             currentDepth--;
         }
     }
-    
+
     /**
      * 重置验证器状态，用于验证新的数据结构
      */

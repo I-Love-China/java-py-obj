@@ -17,13 +17,13 @@ import java.util.List;
  * @author typist
  */
 class ListRule implements GrammarRule {
-    
+
     private final GrammarRule valueRule;
-    
+
     public ListRule(GrammarRule valueRule) {
         this.valueRule = valueRule;
     }
-    
+
     @Override
     public PythonValue parse(ParseContext context) {
         context.consume(TokenType.LEFT_BRACKET);
@@ -31,20 +31,22 @@ class ListRule implements GrammarRule {
         context.consume(TokenType.RIGHT_BRACKET);
         return new PythonValue.ListValue(elements);
     }
-    
+
     private List<PythonValue> parseElementList(ParseContext context) {
         List<PythonValue> elements = new ArrayList<>();
-        
+
         if (!context.is(TokenType.RIGHT_BRACKET)) {
             elements.add(valueRule.parse(context));
-            
+
             while (context.is(TokenType.COMMA)) {
                 context.advance();
-                if (context.is(TokenType.RIGHT_BRACKET)) break;
+                if (context.is(TokenType.RIGHT_BRACKET)) {
+                    break;
+                }
                 elements.add(valueRule.parse(context));
             }
         }
-        
+
         return elements;
     }
 }

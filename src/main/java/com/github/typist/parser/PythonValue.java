@@ -5,20 +5,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Python值对象的抽象表示
+ * Python 值对象的抽象表示
  * 
- * 这个类层次结构实现了Python对象到Java对象的映射，是语法分析阶段构建的抽象语法树(AST)的核心数据结构。
- * 它使用了访问者模式（Visitor Pattern），通过accept方法支持各种操作的解耦实现。
+ * 这个类层次结构实现了 Python 对象到 Java 对象的映射，是语法分析阶段构建的抽象语法树(AST)的核心数据结构。
+ * 它使用了访问者模式（Visitor Pattern），通过 accept 方法支持各种操作的解耦实现。
  * 
  * 编译原理中的作用：
  * - 作为语法分析器(Parser)的输出结果
- * - 表示Python源码的抽象语法结构
+ * - 表示 Python 源码的抽象语法结构
  * - 为后续的语义分析和代码生成提供统一接口
  * 
  * 设计模式应用：
- * - 抽象工厂模式：不同类型的Python值有不同的具体实现
- * - 访问者模式：通过accept方法支持各种转换和处理操作
- * - 组合模式：容器类型（List、Dict、Tuple、Set）可以包含其他PythonValue
+ * - 抽象工厂模式：不同类型的 Python 值有不同的具体实现
+ * - 访问者模式：通过 accept 方法支持各种转换和处理操作
+ * - 组合模式：容器类型（List、Dict、Tuple、Set）可以包含其他 PythonValue
  * 
  * 类型层次结构：
  * PythonValue (抽象基类)
@@ -41,15 +41,15 @@ import java.util.Map;
  * @version 1.1
  */
 public abstract class PythonValue implements Visitable {
-    
+
 
     // ========================= 基本类型实现 =========================
     
     /**
-     * Python基本类型值的实现
+     * Python 基本类型值的实现
      * 
-     * 包装Python中的基本数据类型：整数、浮点数、字符串、布尔值、None。
-     * 这些类型在Python中是不可变的（immutable），因此使用final字段。
+     * 包装 Python 中的基本数据类型：整数、浮点数、字符串、布尔值、None。
+     * 这些类型在 Python 中是不可变的（immutable），因此使用 final 字段。
      * 
      * 支持的基本类型：
      * - 数字类型：int, long, float → Integer, Long, Double
@@ -58,7 +58,7 @@ public abstract class PythonValue implements Visitable {
      * - 空值类型：None → null
      * 
      * 设计考虑：
-     * - 使用Object类型存储以支持多种数据类型（多态）
+     * - 使用 Object 类型存储以支持多种数据类型（多态）
      * - 不进行额外的类型检查，信任词法和语法分析的结果
      * - 保持不可变性以确保线程安全
      */
@@ -109,31 +109,31 @@ public abstract class PythonValue implements Visitable {
     }
 
     // ========================= 容器类型实现 =========================
-    
+
     /**
-     * Python列表类型的实现
+     * Python 列表类型的实现
      * 
-     * 对应Python的list类型，如：[1, 2, 3], ['a', 'b'], [1, 'mixed', True]
+     * 对应 Python 的 list 类型，如：[1, 2, 3], ['a', 'b'], [1, 'mixed', True]
      * 列表是有序的、可变的、允许重复元素的容器类型。
      * 
      * 实现特点：
-     * - 使用List<PythonValue>存储元素，支持异构类型
+     * - 使用 List<PythonValue> 存储元素，支持异构类型
      * - 保持元素顺序
      * - 递归转换嵌套结构
-     * - 转换为Java数组以保持与JSON的兼容性
+     * - 转换为 Java 数组以保持与 JSON 的兼容性
      * 
      * 转换策略：
      * Python list → Java Object[] → JSON Array
      */
     public static class ListValue extends PythonValue {
         /**
-         * 列表元素，使用List保持插入顺序
+         * 列表元素，使用 List 保持插入顺序
          */
         private final List<PythonValue> elements;
 
         /**
          * 构造列表值
-         * @param elements 列表元素，不能为null但可以为空列表
+         * @param elements 列表元素，不能为 null 但可以为空列表
          */
         public ListValue(List<PythonValue> elements) {
             if (elements == null) {
@@ -143,7 +143,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 获取列表元素，主要供Parser使用
+         * 获取列表元素，主要供 Parser 使用
          * @return 元素列表的只读视图
          */
         public List<PythonValue> getElements() {
@@ -153,7 +153,7 @@ public abstract class PythonValue implements Visitable {
         /**
          * 接受访问者的访问
          * 
-         * 实现访问者模式的双分派机制，将自己作为ListValue传递给访问者。
+         * 实现访问者模式的双分派机制，将自己作为 ListValue 传递给访问者。
          * 
          * @param visitor 访问者对象
          * @return 访问者操作的结果
@@ -164,7 +164,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 返回列表的字符串表示，格式类似Python的list
+         * 返回列表的字符串表示，格式类似 Python 的 list
          */
         @Override
         public String toString() {
@@ -173,33 +173,33 @@ public abstract class PythonValue implements Visitable {
     }
 
     /**
-     * Python字典类型的实现
+     * Python 字典类型的实现
      * 
-     * 对应Python的dict类型，如：{'name': 'John', 'age': 30}, {1: 'one', 2: 'two'}
+     * 对应 Python 的 dict 类型，如：{'name': 'John', 'age': 30}, {1: 'one', 2: 'two'}
      * 字典是无序的（Python 3.7+保持插入顺序）、可变的、键值对容器类型。
      * 
      * 实现特点：
-     * - 使用Map<PythonValue, PythonValue>存储键值对
+     * - 使用 Map<PythonValue, PythonValue> 存储键值对
      * - 键可以是任何不可变类型（数字、字符串、布尔值等）
      * - 值可以是任何类型，包括嵌套的容器类型
-     * - 转换时将所有键转换为字符串以符合JSON规范
+     * - 转换时将所有键转换为字符串以符合 JSON 规范
      * 
      * 转换策略：
      * Python dict → Java Map<String, Object> → JSON Object
      * 
      * 注意事项：
-     * - JSON要求所有键都是字符串，因此进行键类型转换
+     * - JSON 要求所有键都是字符串，因此进行键类型转换
      * - 转换可能导致键冲突（如数字1和字符串"1"）
      */
     public static class DictValue extends PythonValue {
         /**
-         * 字典的键值对，使用Map保持关联关系
+         * 字典的键值对，使用 Map 保持关联关系
          */
         private final Map<PythonValue, PythonValue> entries;
 
         /**
          * 构造字典值
-         * @param entries 字典的键值对映射，不能为null但可以为空字典
+         * @param entries 字典的键值对映射，不能为 null 但可以为空字典
          */
         public DictValue(Map<PythonValue, PythonValue> entries) {
             if (entries == null) {
@@ -209,7 +209,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 获取字典条目，主要供Parser使用
+         * 获取字典条目，主要供 Parser 使用
          * @return 键值对映射的视图
          */
         public Map<PythonValue, PythonValue> getEntries() {
@@ -219,7 +219,7 @@ public abstract class PythonValue implements Visitable {
         /**
          * 接受访问者的访问
          * 
-         * 实现访问者模式的双分派机制，将自己作为DictValue传递给访问者。
+         * 实现访问者模式的双分派机制，将自己作为 DictValue 传递给访问者。
          * 
          * @param visitor 访问者对象
          * @return 访问者操作的结果
@@ -230,7 +230,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 返回字典的字符串表示，使用Java Map的默认格式
+         * 返回字典的字符串表示，使用 Java Map 的默认格式
          */
         @Override
         public String toString() {
@@ -239,31 +239,31 @@ public abstract class PythonValue implements Visitable {
     }
 
     /**
-     * Python元组类型的实现
+     * Python 元组类型的实现
      * 
-     * 对应Python的tuple类型，如：(1, 2, 3), ('a', 'b'), (1, 'mixed', True)
+     * 对应 Python 的 tuple 类型，如：(1, 2, 3), ('a', 'b'), (1, 'mixed', True)
      * 元组是有序的、不可变的、允许重复元素的容器类型。
      * 
      * 实现特点：
-     * - 使用List<PythonValue>存储元素（虽然元组不可变，但Java List便于处理）
+     * - 使用 List<PythonValue> 存储元素（虽然元组不可变，但 Java List 便于处理）
      * - 保持元素顺序
      * - 递归转换嵌套结构
-     * - 转换为Java数组，与列表转换结果相同
+     * - 转换为 Java 数组，与列表转换结果相同
      * 
      * 转换策略：
      * Python tuple → Java Object[] → JSON Array
      * 
-     * 注意：JSON中没有区分list和tuple，都转换为数组
+     * 注意：JSON 中没有区分 list 和 tuple，都转换为数组
      */
     public static class TupleValue extends PythonValue {
         /**
-         * 元组元素，使用List保持顺序
+         * 元组元素，使用 List 保持顺序
          */
         private final List<PythonValue> elements;
 
         /**
          * 构造元组值
-         * @param elements 元组元素，不能为null但可以为空元组
+         * @param elements 元组元素，不能为 null 但可以为空元组
          */
         public TupleValue(List<PythonValue> elements) {
             if (elements == null) {
@@ -273,7 +273,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 获取元组元素，主要供Parser使用
+         * 获取元组元素，主要供 Parser 使用
          * @return 元素列表的只读视图
          */
         public List<PythonValue> getElements() {
@@ -283,7 +283,7 @@ public abstract class PythonValue implements Visitable {
         /**
          * 接受访问者的访问
          * 
-         * 实现访问者模式的双分派机制，将自己作为TupleValue传递给访问者。
+         * 实现访问者模式的双分派机制，将自己作为 TupleValue 传递给访问者。
          * 
          * @param visitor 访问者对象
          * @return 访问者操作的结果
@@ -294,7 +294,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 返回元组的字符串表示，使用Python风格的圆括号格式
+         * 返回元组的字符串表示，使用 Python 风格的圆括号格式
          */
         @Override
         public String toString() {
@@ -305,35 +305,35 @@ public abstract class PythonValue implements Visitable {
     }
 
     /**
-     * Python集合类型的实现
+     * Python 集合类型的实现
      * 
-     * 对应Python的set类型，如：{1, 2, 3}, {'a', 'b'}, {1, 'mixed', True}
+     * 对应 Python 的 set 类型，如：{1, 2, 3}, {'a', 'b'}, {1, 'mixed', True}
      * 集合是无序的、可变的、不允许重复元素的容器类型。
      * 
      * 实现特点：
-     * - 使用List<PythonValue>存储元素（简化实现，不进行去重）
-     * - 元素顺序可能与Python中的不同
+     * - 使用 List<PythonValue> 存储元素（简化实现，不进行去重）
+     * - 元素顺序可能与 Python 中的不同
      * - 递归转换嵌套结构
-     * - 转换为Java数组，与列表转换结果相同
+     * - 转换为 Java 数组，与列表转换结果相同
      * 
      * 转换策略：
      * Python set → Java Object[] → JSON Array
      * 
      * 注意事项：
-     * - JSON中没有集合类型，转换为数组
-     * - 当前实现不进行元素去重，依赖Python源码的正确性
-     * - 元素顺序不保证与Python一致
+     * - JSON 中没有集合类型，转换为数组
+     * - 当前实现不进行元素去重，依赖 Python 源码的正确性
+     * - 元素顺序不保证与 Python 一致
      */
     public static class SetValue extends PythonValue {
         /**
-         * 集合元素，使用List简化实现
-         * 注意：这里没有实现真正的Set语义（去重），假设输入已经正确
+         * 集合元素，使用 List 简化实现
+         * 注意：这里没有实现真正的 Set 语义（去重），假设输入已经正确
          */
         private final List<PythonValue> elements;
 
         /**
          * 构造集合值
-         * @param elements 集合元素，不能为null但可以为空集合
+         * @param elements 集合元素，不能为 null 但可以为空集合
          */
         public SetValue(List<PythonValue> elements) {
             if (elements == null) {
@@ -343,7 +343,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 获取集合元素，主要供Parser使用
+         * 获取集合元素，主要供 Parser 使用
          * @return 元素列表的视图
          */
         public List<PythonValue> getElements() {
@@ -353,7 +353,7 @@ public abstract class PythonValue implements Visitable {
         /**
          * 接受访问者的访问
          * 
-         * 实现访问者模式的双分派机制，将自己作为SetValue传递给访问者。
+         * 实现访问者模式的双分派机制，将自己作为 SetValue 传递给访问者。
          * 
          * @param visitor 访问者对象
          * @return 访问者操作的结果
@@ -364,7 +364,7 @@ public abstract class PythonValue implements Visitable {
         }
 
         /**
-         * 返回集合的字符串表示，使用Python风格的花括号格式
+         * 返回集合的字符串表示，使用 Python 风格的花括号格式
          * 格式：{元素1, 元素2, 元素3}
          */
         @Override

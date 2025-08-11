@@ -21,9 +21,9 @@ package com.github.typist.lexer;
  * @version 1.1
  */
 public class Token {
-    
+
     // ========================= 核心属性 =========================
-    
+
     /**
      * 记号类型
      * 
@@ -33,7 +33,7 @@ public class Token {
      * @see TokenType 支持的所有记号类型
      */
     private final TokenType type;
-    
+
     /**
      * 记号的值
      * 
@@ -48,7 +48,7 @@ public class Token {
      * 使用Object类型以支持多种数据类型，体现了多态性。
      */
     private final Object value;
-    
+
     /**
      * 记号在源代码中的位置
      * 
@@ -62,7 +62,7 @@ public class Token {
     private final int position;
 
     // ========================= 构造函数 =========================
-    
+
     /**
      * 构造一个记号对象
      * 
@@ -76,14 +76,14 @@ public class Token {
         if (type == null) {
             throw new IllegalArgumentException("Token type cannot be null");
         }
-        
+
         this.type = type;
         this.value = value;
         this.position = position;
     }
 
     // ========================= 访问器方法 =========================
-    
+
     /**
      * 获取记号类型
      * 
@@ -130,7 +130,7 @@ public class Token {
     }
 
     // ========================= 辅助方法 =========================
-    
+
     /**
      * 返回记号的字符串表示
      * 
@@ -149,7 +149,7 @@ public class Token {
         return String.format("Token{type=%s, value=%s, pos=%d}", 
                            type, value, position);
     }
-    
+
     /**
      * 检查两个记号是否相等
      * 
@@ -173,7 +173,7 @@ public class Token {
                type == token.type &&
                java.util.Objects.equals(value, token.value);
     }
-    
+
     /**
      * 返回记号的哈希码
      * 

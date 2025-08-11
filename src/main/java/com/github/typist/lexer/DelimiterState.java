@@ -1,7 +1,5 @@
 package com.github.typist.lexer;
 
-import com.github.typist.lexer.TokenType;
-
 /**
  * 分隔符识别状态
  * <p>

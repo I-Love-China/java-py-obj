@@ -19,11 +19,11 @@ import java.util.List;
  * @author typist
  */
 class ParseContext {
-    
+
     private final List<Token> tokens;
     private int position;
     private Token current;
-    
+
     public ParseContext(List<Token> tokens) {
         if (tokens == null || tokens.isEmpty()) {
             throw new IllegalArgumentException("Token list cannot be null or empty");
@@ -32,22 +32,22 @@ class ParseContext {
         this.position = 0;
         this.current = tokens.get(0);
     }
-    
+
     public Token current() {
         return current;
     }
-    
+
     public TokenType currentType() {
         return current.getType();
     }
-    
+
     public void advance() {
         if (position < tokens.size() - 1) {
             position++;
             current = tokens.get(position);
         }
     }
-    
+
     public void consume(TokenType expectedType) {
         if (current.getType() != expectedType) {
             throw new IllegalArgumentException(
@@ -57,11 +57,11 @@ class ParseContext {
         }
         advance();
     }
-    
+
     public boolean is(TokenType type) {
         return current.getType() == type;
     }
-    
+
     public boolean hasMore() {
         return position < tokens.size() - 1;
     }

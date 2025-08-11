@@ -50,7 +50,9 @@ class DictOrSetRule implements GrammarRule {
 
         while (context.is(TokenType.COMMA)) {
             context.advance();
-            if (context.is(TokenType.RIGHT_BRACE)) break;
+            if (context.is(TokenType.RIGHT_BRACE)) {
+                break;
+            }
 
             PythonValue key = valueRule.parse(context);
             context.consume(TokenType.COLON);
@@ -68,7 +70,9 @@ class DictOrSetRule implements GrammarRule {
 
         while (context.is(TokenType.COMMA)) {
             context.advance();
-            if (context.is(TokenType.RIGHT_BRACE)) break;
+            if (context.is(TokenType.RIGHT_BRACE)) {
+                break;
+            }
             elements.add(valueRule.parse(context));
         }
 

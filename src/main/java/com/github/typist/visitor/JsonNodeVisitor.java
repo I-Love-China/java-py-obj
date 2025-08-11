@@ -8,21 +8,21 @@ import com.github.typist.parser.PythonValue;
 import java.util.Map;
 
 /**
- * JSON节点转换访问者
+ * JSON 节点转换访问者
  * 
- * 实现访问者模式的具体访问者，负责将PythonValue对象转换为Jackson的JsonNode对象。
- * 这个访问者替代了原来PythonObjectParser中的convertToJsonNode方法，实现了
+ * 实现访问者模式的具体访问者，负责将 PythonValue 对象转换为 Jackson 的 JsonNode 对象。
+ * 这个访问者替代了原来 PythonObjectParser 中的 convertToJsonNode 方法，实现了
  * 类型转换逻辑与业务流程的分离。
  * 
  * 设计特点：
- * - 单一职责：专注于JsonNode转换，不关心其他转换逻辑
+ * - 单一职责：专注于 JsonNode 转换，不关心其他转换逻辑
  * - 类型安全：利用访问者模式的双分派确保类型匹配
- * - 可扩展：新增Python类型时只需添加对应的visit方法
+ * - 可扩展：新增 Python 类型时只需添加对应的 visit 方法
  * - 可测试：独立的转换逻辑便于单元测试
  * 
  * 转换映射规则：
  * ┌─────────────────┬──────────────────┬──────────────────────────────┐
- * │ Python类型      │ PythonValue类型  │ JsonNode类型                 │
+ * │ Python 类型      │ PythonValue 类型  │ JsonNode 类型                 │
  * ├─────────────────┼──────────────────┼──────────────────────────────┤
  * │ None            │ PrimitiveValue   │ NullNode                     │
  * │ bool            │ PrimitiveValue   │ BooleanNode                  │
@@ -36,13 +36,13 @@ import java.util.Map;
  * └─────────────────┴──────────────────┴──────────────────────────────┘
  * 
  * 性能优化：
- * - 使用Jackson的高效节点创建API
+ * - 使用 Jackson 的高效节点创建 API
  * - 避免多余的对象创建和类型检查
- * - 递归调用利用JVM的尾调用优化
+ * - 递归调用利用 JVM 的尾调用优化
  * 
  * 错误处理：
- * - 不支持的类型抛出IllegalArgumentException
- * - null值安全处理
+ * - 不支持的类型抛出 IllegalArgumentException
+ * - null 值安全处理
  * - 类型转换异常的统一处理
  * 
  * 使用示例：
@@ -54,9 +54,9 @@ import java.util.Map;
  * ```
  * 
  * 线程安全性：
- * - ObjectMapper是线程安全的，可以安全地在多线程环境中使用
+ * - ObjectMapper 是线程安全的，可以安全地在多线程环境中使用
  * - 访问者本身是无状态的，可以被多个线程共享
- * - 创建的JsonNode对象是不可变的
+ * - 创建的 JsonNode 对象是不可变的
  * 
  * @author typist
  * @version 1.1
@@ -64,19 +64,19 @@ import java.util.Map;
  * @see PythonValue
  */
 public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
-    
+
     /**
-     * Jackson JSON处理器
+     * Jackson JSON 处理器
      * 
-     * 用于创建各种类型的JsonNode对象。Jackson是线程安全的，
+     * 用于创建各种类型的 JsonNode 对象。Jackson 是线程安全的，
      * 可以在多线程环境中安全使用。
      */
     private final ObjectMapper objectMapper;
-    
+
     /**
-     * 构造JsonNode转换访问者
+     * 构造 JsonNode 转换访问者
      * 
-     * @param objectMapper Jackson对象映射器，不能为null
+     * @param objectMapper Jackson 对象映射器，不能为 null
      * @throws IllegalArgumentException 如果objectMapper为null
      */
     public JsonNodeVisitor(ObjectMapper objectMapper) {
@@ -85,7 +85,7 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
         }
         this.objectMapper = objectMapper;
     }
-    
+
     /**
      * 访问基本类型值，转换为对应的JsonNode
      * 
@@ -109,7 +109,7 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
     @Override
     public JsonNode visitPrimitive(PythonValue.PrimitiveValue primitive) {
         Object value = primitive.getValue();
-        
+
         if (value == null) {
             return NullNode.getInstance();
         } else if (value instanceof Boolean) {
@@ -128,7 +128,7 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
             );
         }
     }
-    
+
     /**
      * 访问列表类型值，转换为ArrayNode
      * 
@@ -159,10 +159,10 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
             JsonNode elementNode = element.accept(this);
             arrayNode.add(elementNode);
         }
-        
+
         return arrayNode;
     }
-    
+
     /**
      * 访问字典类型值，转换为ObjectNode
      * 
@@ -188,23 +188,23 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
     @Override
     public JsonNode visitDict(PythonValue.DictValue dict) {
         ObjectNode objectNode = objectMapper.createObjectNode();
-        
+
         for (Map.Entry<PythonValue, PythonValue> entry : dict.getEntries().entrySet()) {
             // 将键转换为字符串，确保JSON兼容性
             PythonValue keyValue = entry.getKey();
             JsonNode keyNode = keyValue.accept(this);
             String key = convertJsonNodeToString(keyNode);
-            
+
             // 递归转换值
             PythonValue valueValue = entry.getValue();
             JsonNode valueNode = valueValue.accept(this);
-            
+
             objectNode.set(key, valueNode);
         }
-        
+
         return objectNode;
     }
-    
+
     /**
      * 访问元组类型值，转换为ArrayNode
      * 
@@ -222,16 +222,16 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
     @Override
     public JsonNode visitTuple(PythonValue.TupleValue tuple) {
         ArrayNode arrayNode = objectMapper.createArrayNode();
-        
+
         for (PythonValue element : tuple.getElements()) {
             // 递归转换
             JsonNode elementNode = element.accept(this);
             arrayNode.add(elementNode);
         }
-        
+
         return arrayNode;
     }
-    
+
     /**
      * 访问集合类型值，转换为ArrayNode
      * 
@@ -249,16 +249,16 @@ public class JsonNodeVisitor implements PythonValueVisitor<JsonNode> {
     @Override
     public JsonNode visitSet(PythonValue.SetValue set) {
         ArrayNode arrayNode = objectMapper.createArrayNode();
-        
+
         for (PythonValue element : set.getElements()) {
             // 递归转换
             JsonNode elementNode = element.accept(this);
             arrayNode.add(elementNode);
         }
-        
+
         return arrayNode;
     }
-    
+
     /**
      * 将JsonNode转换为字符串
      * 

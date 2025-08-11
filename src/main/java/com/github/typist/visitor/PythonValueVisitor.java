@@ -3,9 +3,9 @@ package com.github.typist.visitor;
 import com.github.typist.parser.PythonValue;
 
 /**
- * Python值访问者接口
+ * Python 值访问者接口
  * 
- * 实现访问者模式(Visitor Pattern)的核心接口，用于对PythonValue对象进行各种操作。
+ * 实现访问者模式 (Visitor Pattern) 的核心接口，用于对 PythonValue 对象进行各种操作。
  * 访问者模式将数据结构与作用于这些数据结构上的操作分离，使得可以在不修改
  * 数据结构的前提下定义新的操作。
  * 
@@ -44,7 +44,7 @@ import com.github.typist.parser.PythonValue;
  * @version 1.1
  */
 public interface PythonValueVisitor<T> {
-    
+
     /**
      * 访问基本类型值
      * 
@@ -58,7 +58,7 @@ public interface PythonValueVisitor<T> {
      * @return 访问操作的结果
      */
     T visitPrimitive(PythonValue.PrimitiveValue primitive);
-    
+
     /**
      * 访问列表类型值
      * 
@@ -74,7 +74,7 @@ public interface PythonValueVisitor<T> {
      * @return 访问操作的结果
      */
     T visitList(PythonValue.ListValue list);
-    
+
     /**
      * 访问字典类型值
      * 
@@ -90,7 +90,7 @@ public interface PythonValueVisitor<T> {
      * @return 访问操作的结果
      */
     T visitDict(PythonValue.DictValue dict);
-    
+
     /**
      * 访问元组类型值
      * 
@@ -106,7 +106,7 @@ public interface PythonValueVisitor<T> {
      * @return 访问操作的结果
      */
     T visitTuple(PythonValue.TupleValue tuple);
-    
+
     /**
      * 访问集合类型值
      * 
