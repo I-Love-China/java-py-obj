@@ -635,18 +635,18 @@ Python    Token     AST    JsonNode/   JSON/Java
 
 ```
 代码覆盖率报告:
-├── com.github.typist (主包)               28%
-│   └── PythonObjectParser                28%
+├── com.github.typist (主包)               38%
+│   └── PythonObjectParser                38%
 ├── com.github.typist.lexer (词法分析)     83%
 │   ├── Lexer                            100%
 │   ├── LexerContext                      90%
 │   ├── DispatchState                    100%
 │   ├── NumberState                       80%
-│   ├── StringState                       86%
-│   ├── IdentifierState                   87%
+│   ├── StringState                       85%
+│   ├── IdentifierState                   86%
 │   ├── DelimiterState                   100%
 │   ├── ErrorState                       100%
-│   ├── Token                             22%
+│   ├── Token                             21%
 │   └── TokenType                        100%
 ├── com.github.typist.parser (语法分析)    84%
 │   ├── Parser                           100%
@@ -658,15 +658,16 @@ Python    Token     AST    JsonNode/   JSON/Java
 │   ├── DictOrSetRule                     98%
 │   ├── PythonValue                      100%
 │   ├── PythonValue.PrimitiveValue        76%
-│   ├── PythonValue.ListValue             63%
-│   ├── PythonValue.TupleValue            35%
-│   ├── PythonValue.SetValue              35%
-│   └── PythonValue.DictValue             63%
-├── com.github.typist.visitor (访问者)     22%
+│   ├── PythonValue.ListValue             62%
+│   ├── PythonValue.TupleValue            34%
+│   ├── PythonValue.SetValue              34%
+│   └── PythonValue.DictValue             62%
+├── com.github.typist.visitor (访问者)     84%
 │   ├── JsonNodeVisitor                   87%
-│   ├── JavaObjectVisitor                  3%
-│   └── ValidationVisitor                  0%
-└── 总体覆盖率                            60%
+│   ├── JavaObjectVisitor                100%
+│   ├── ValidationVisitor                 75%
+│   └── ValidationResult                 100%
+└── 总体覆盖率                            80%
 ```
 
 ## 🤝 贡献指南
