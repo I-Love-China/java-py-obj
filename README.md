@@ -637,7 +637,7 @@ Python    Token     AST    JsonNode/   JSON/Java
 代码覆盖率报告:
 ├── com.github.typist (主包)               38%
 │   └── PythonObjectParser                38%
-├── com.github.typist.lexer (词法分析)     83%
+├── com.github.typist.lexer (词法分析)     92%
 │   ├── Lexer                            100%
 │   ├── LexerContext                      90%
 │   ├── DispatchState                    100%
@@ -646,7 +646,7 @@ Python    Token     AST    JsonNode/   JSON/Java
 │   ├── IdentifierState                   86%
 │   ├── DelimiterState                   100%
 │   ├── ErrorState                       100%
-│   ├── Token                             21%
+│   ├── Token                            100%
 │   └── TokenType                        100%
 ├── com.github.typist.parser (语法分析)    84%
 │   ├── Parser                           100%
@@ -667,7 +667,7 @@ Python    Token     AST    JsonNode/   JSON/Java
 │   ├── JavaObjectVisitor                100%
 │   ├── ValidationVisitor                 75%
 │   └── ValidationResult                 100%
-└── 总体覆盖率                            80%
+└── 总体覆盖率                            83%
 ```
 
 ## 🤝 贡献指南
